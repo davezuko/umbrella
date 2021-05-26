@@ -159,8 +159,7 @@ export let AuthenticationContext: {
         saveItem(StorageKey.NONCE_IDTOKEN, _idTokenNonce, true)
         saveItem(StorageKey.ERROR, "")
         saveItem(StorageKey.ERROR_DESCRIPTION, "")
-        let url =
-            getNavigateUrl("id_token") + "&nonce=" + encode(_idTokenNonce)
+        let url = getNavigateUrl("id_token") + "&nonce=" + encode(_idTokenNonce)
 
         if (config.displayCall) {
             config.displayCall(url)
@@ -186,8 +185,7 @@ export let AuthenticationContext: {
     ) {
         try {
             let left = window.innerWidth / 2 - popUpWidth / 2 + window.screenX
-            let top =
-                window.innerHeight / 2 - popUpHeight / 2 + window.screenY
+            let top = window.innerHeight / 2 - popUpHeight / 2 + window.screenY
             let popupWindow = window.open(
                 urlNavigate,
                 title,
@@ -398,7 +396,11 @@ export let AuthenticationContext: {
      * Acquires access token with hidden iframe
      * @ignore
      */
-    function renewToken(resource: string, callback: any, responseType = "token") {
+    function renewToken(
+        resource: string,
+        callback: any,
+        responseType = "token",
+    ) {
         // use iframe to try to renew token
         // use given resource to create new authz url
         if (process.env.NODE_ENV === "development") {
@@ -466,7 +468,11 @@ export let AuthenticationContext: {
         loadFrameTimeout(urlNavigate, "adalIdTokenFrame", config.clientId)
     }
 
-    function loadFrameTimeout(urlNavigation: string, frameName: string, resource: string) {
+    function loadFrameTimeout(
+        urlNavigation: string,
+        frameName: string,
+        resource: string,
+    ) {
         //set iframe session to pending
         if (process.env.NODE_ENV === "development") {
             Logger.verbose("Set loading state to pending for: " + resource)
@@ -668,7 +674,11 @@ export let AuthenticationContext: {
      * @param {string}   resource  ResourceUri identifying the target resource
      * @param {string}   extraQueryParameters  extraQueryParameters to add to the authentication request
      */
-    function acquireTokenRedirect(resource: string, extraQueryParameters: any, claims: any) {
+    function acquireTokenRedirect(
+        resource: string,
+        extraQueryParameters: any,
+        claims: any,
+    ) {
         if (!canAcquireToken(resource)) {
             return
         }

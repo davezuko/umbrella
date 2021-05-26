@@ -6,4 +6,4 @@
 
 | Package                             | Description                                                  |
 | ----------------------------------- | ------------------------------------------------------------ |
-| `[@davezuko/adal](./packages/adal)` | slim, modern fork of Microsoft's adal authentication library |
+| [`@davezuko/adal`](./packages/adal) | slim, modern fork of Microsoft's adal authentication library |

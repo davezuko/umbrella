@@ -9,9 +9,10 @@
         "packages/*"
     ],
     "scripts": {
+        "make": "node Makefile.mjs",
         "clean": "node Makefile.mjs clean",
         "build": "node Makefile.mjs build",
-        "format": "prettier . --write"
+        "format": "node Makefile.mjs format"
     },
     "prettier": {
         "semi": false,
