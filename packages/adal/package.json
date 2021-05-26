@@ -1,0 +1,17 @@
+{
+    "name": "@davezuko/adal",
+    "version": "1.0.18",
+    "license": "Apache-2.0",
+    "description": "Modern, slimmer fork of Microsoft's ADAL library",
+    "homepage": "https://github.com/davezuko/umbrella/tree/master/packages/adal",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/davezuko/umbrella.git"
+    },
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "files": [
+        "src",
+        "dist"
+    ]
+}

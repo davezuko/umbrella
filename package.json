@@ -1,0 +1,27 @@
+{
+    "name": "@davezuko/umbrella",
+    "main": "README.md",
+    "private": true,
+    "engines": {
+        "node": "^14.0.0"
+    },
+    "workspaces": [
+        "packages/*"
+    ],
+    "scripts": {
+        "clean": "node Makefile.mjs clean",
+        "build": "node Makefile.mjs build",
+        "format": "prettier . --write"
+    },
+    "prettier": {
+        "semi": false,
+        "tabWidth": 4,
+        "bracketSpacing": false,
+        "trailingComma": "all"
+    },
+    "devDependencies": {
+        "@types/node": "^15.6.1",
+        "prettier": "^2.2.1",
+        "typescript": "^4.2.3"
+    }
+}
