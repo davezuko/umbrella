@@ -107,9 +107,7 @@ export interface AuthenticationContext {
     _callBacksMappedToRenewStates: any
 }
 
-export let AuthenticationContext: {
-    new (config: Config): AuthenticationContext
-} = ((config: Config): AuthenticationContext => {
+export let createAuthenticationContext = (config: Config): AuthenticationContext => {
     if ((window as any)[SINGLETON]) {
         return (window as any)[SINGLETON]
     }
