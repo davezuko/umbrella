@@ -128,30 +128,16 @@ export let createAuthenticationContext = (
     /**
      * Initiates the login process by redirecting the user to Azure AD authorization endpoint.
      */
-    let login = () => {
+    let login = async (): Promise<void> => {
         if (_loginInProgress) {
-            if (process.env.NODE_ENV === "development") {
-                Logger.info("Login in progress")
-            }
-            return
+            throw new Error("login already in progress")
         }
-
         _loginInProgress = true
-
         // Token is not present and user needs to login
         let expectedState = guid()
         let loginStartPage = window.location.href
         config.state = expectedState
         _idTokenNonce = guid()
-
-        if (process.env.NODE_ENV === "development") {
-            Logger.verbose(
-                "Expected state: " +
-                    expectedState +
-                    " startPage:" +
-                    loginStartPage,
-            )
-        }
         saveItem(StorageKey.LOGIN_REQUEST, loginStartPage)
         saveItem(StorageKey.LOGIN_ERROR, "")
         saveItem(StorageKey.STATE_LOGIN, expectedState, true)
@@ -165,8 +151,25 @@ export let createAuthenticationContext = (
         } else if (config.popUp) {
             saveItem(StorageKey.STATE_LOGIN, "") // so requestInfo does not match redirect case
             _renewStates.push(expectedState)
-            registerCallback(expectedState, config.clientId, config.callback)
-            loginPopup(url)
+            return new Promise((resolve, reject) => {
+                registerCallback(
+                    expectedState,
+                    config.clientId,
+                    (
+                        errorDesc: any,
+                        token: any,
+                        error: any,
+                        tokenType: any,
+                    ) => {
+                        if (error) {
+                            reject(error)
+                        } else {
+                            resolve()
+                        }
+                    },
+                )
+                loginPopup(url)
+            })
         } else {
             promptUser(url)
         }
@@ -365,26 +368,15 @@ export let createAuthenticationContext = (
                 tokenType: any,
             ) => {
                 _activeRenewals[resource] = null
-
-                for (
-                    var i = 0;
-                    i < _callBacksMappedToRenewStates[expectedState].length;
-                    ++i
-                ) {
+                for (let fn of _callBacksMappedToRenewStates[expectedState]) {
                     try {
-                        _callBacksMappedToRenewStates[expectedState][i](
-                            errorDesc,
-                            token,
-                            error,
-                            tokenType,
-                        )
+                        fn(errorDesc, token, error, tokenType)
                     } catch (error) {
                         if (process.env.NODE_ENV === "development") {
                             Logger.warn(error)
                         }
                     }
                 }
-
                 _callBacksMappedToRenewStates[expectedState] = null
                 _callBackMappedToRenewStates[expectedState] = null
             }
@@ -1317,9 +1309,11 @@ let readConfig = (config: Config): Config => {
         expireOffsetSeconds: 300,
         navigateToLoginRequestUrl: true,
         tenant: "common",
-        redirectUri: window.location.href.split("?")[0].split("#")[0],
         callback: () => {},
         ...config,
+    }
+    if (!config.redirectUri) {
+        config.redirectUri = window.location.href.split("?")[0].split("#")[0]
     }
     if (process.env.NODE_ENV === "development") {
         Logger.correlationId = config.correlationId
