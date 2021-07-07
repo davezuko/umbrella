@@ -90,7 +90,6 @@ export interface AuthenticationContext {
     config: Config
     login(): void
     logout(): void
-    loginInProgress(): boolean
     getUser(): User | undefined
     registerCallback(expectedState: any, resource: string, callback: any): void
     acquireToken(resource: string, callback: any): void
@@ -107,7 +106,9 @@ export interface AuthenticationContext {
     _callBacksMappedToRenewStates: any
 }
 
-export let createAuthenticationContext = (config: Config): AuthenticationContext => {
+export let createAuthenticationContext = (
+    config: Config,
+): AuthenticationContext => {
     if ((window as any)[SINGLETON]) {
         return (window as any)[SINGLETON]
     }
@@ -127,7 +128,7 @@ export let createAuthenticationContext = (config: Config): AuthenticationContext
     /**
      * Initiates the login process by redirecting the user to Azure AD authorization endpoint.
      */
-    function login() {
+    let login = () => {
         if (_loginInProgress) {
             if (process.env.NODE_ENV === "development") {
                 Logger.info("Login in progress")
@@ -175,12 +176,12 @@ export let createAuthenticationContext = (config: Config): AuthenticationContext
      * Configures popup window for login.
      * @ignore
      */
-    function openPopup(
+    let openPopup = (
         urlNavigate: string,
         title: string,
         popUpWidth: number,
         popUpHeight: number,
-    ) {
+    ) => {
         try {
             let left = window.innerWidth / 2 - popUpWidth / 2 + window.screenX
             let top = window.innerHeight / 2 - popUpHeight / 2 + window.screenY
@@ -209,13 +210,13 @@ export let createAuthenticationContext = (config: Config): AuthenticationContext
         }
     }
 
-    function handlePopupError(
+    let handlePopupError = (
         loginCallback: any,
         resource: string | undefined | null,
         error: string,
         errorDesc: string,
         loginError: string,
-    ) {
+    ) => {
         if (process.env.NODE_ENV === "development") {
             Logger.warn(errorDesc)
         }
@@ -240,11 +241,11 @@ export let createAuthenticationContext = (config: Config): AuthenticationContext
      * attached to the URI fragment as an id_token field. It closes popup window after redirection.
      * @ignore
      */
-    function loginPopup(
+    let loginPopup = (
         urlNavigate: string,
         resource?: string,
         callback?: any,
-    ) {
+    ) => {
         var popupWindow = openPopup(urlNavigate, "login", 483, 600)
         var loginCallback = callback || config.callback
 
@@ -308,7 +309,7 @@ export let createAuthenticationContext = (config: Config): AuthenticationContext
         }, 1)
     }
 
-    function getUser() {
+    let getUser = () => {
         if (!_user) {
             let idToken = getItem(StorageKey.IDTOKEN)
             if (idToken) {
@@ -323,7 +324,7 @@ export let createAuthenticationContext = (config: Config): AuthenticationContext
      * @param {string}   resource A URI that identifies the resource for which the token is requested.
      * @returns {string} token if if it exists and not expired, otherwise null.
      */
-    function getCachedToken(resource: string): string | undefined {
+    let getCachedToken = (resource: string): string | undefined => {
         if (!hasResource(resource)) return
 
         let token = getItem(StorageKey.ACCESS_TOKEN_KEY + resource)
@@ -343,11 +344,11 @@ export let createAuthenticationContext = (config: Config): AuthenticationContext
      * @param {string}   expectedState A unique identifier (guid).
      * @param {tokenCallback} callback - The callback provided by the caller. It will be called with token or error.
      */
-    function registerCallback(
+    let registerCallback = (
         expectedState: any,
         resource: string,
         callback: any,
-    ) {
+    ) => {
         _activeRenewals[resource] = expectedState
 
         if (!_callBacksMappedToRenewStates[expectedState]) {
@@ -394,11 +395,11 @@ export let createAuthenticationContext = (config: Config): AuthenticationContext
      * Acquires access token with hidden iframe
      * @ignore
      */
-    function renewToken(
+    let renewToken = (
         resource: string,
         callback: any,
         responseType = "token",
-    ) {
+    ) => {
         // use iframe to try to renew token
         // use given resource to create new authz url
         if (process.env.NODE_ENV === "development") {
@@ -437,7 +438,7 @@ export let createAuthenticationContext = (config: Config): AuthenticationContext
      * Renews idtoken for app's own backend when resource is clientId and calls the callback with token/error
      * @ignore
      */
-    function renewIdToken(callback: any, responseType?: string) {
+    let renewIdToken = (callback: any, responseType?: string) => {
         // use iframe to try to renew token
         let frameHandle = addAdalFrame("adalIdTokenFrame")
         let expectedState = guid() + RESOURCE_DELIMETER + config.clientId
@@ -466,11 +467,11 @@ export let createAuthenticationContext = (config: Config): AuthenticationContext
         loadFrameTimeout(urlNavigate, "adalIdTokenFrame", config.clientId)
     }
 
-    function loadFrameTimeout(
+    let loadFrameTimeout = (
         urlNavigation: string,
         frameName: string,
         resource: string,
-    ) {
+    ) => {
         //set iframe session to pending
         if (process.env.NODE_ENV === "development") {
             Logger.verbose("Set loading state to pending for: " + resource)
@@ -519,7 +520,7 @@ export let createAuthenticationContext = (config: Config): AuthenticationContext
     /**
      * Loads iframe with authorization endpoint URL
      */
-    function loadFrame(urlNavigate: string, frameName: string) {
+    let loadFrame = (urlNavigate: string, frameName: string) => {
         // This trick overcomes iframe navigation in IE
         // IE does not load the page consistently in iframe
         if (process.env.NODE_ENV === "development") {
@@ -538,7 +539,7 @@ export let createAuthenticationContext = (config: Config): AuthenticationContext
      * Acquires token from the cache if it is not expired. Otherwise sends request to AAD to obtain a new token.
      * @param {string}   resource  ResourceUri identifying the target resource
      */
-    function acquireToken(resource: string, callback: any) {
+    let acquireToken = (resource: string, callback: any) => {
         if (!resource) {
             let error = "resource is required"
             if (process.env.NODE_ENV === "development") {
@@ -617,12 +618,12 @@ export let createAuthenticationContext = (config: Config): AuthenticationContext
      * @param {string}   extraQueryParameters  extraQueryParameters to add to the authentication request
      * @param {tokenCallback} callback -  The callback provided by the caller. It will be called with token or error.
      */
-    function acquireTokenPopup(
+    let acquireTokenPopup = (
         resource: any,
         extraQueryParameters: any,
         claims: any,
         callback: any,
-    ) {
+    ) => {
         if (!canAcquireToken(resource)) {
             return
         }
@@ -672,11 +673,11 @@ export let createAuthenticationContext = (config: Config): AuthenticationContext
      * @param {string}   resource  ResourceUri identifying the target resource
      * @param {string}   extraQueryParameters  extraQueryParameters to add to the authentication request
      */
-    function acquireTokenRedirect(
+    let acquireTokenRedirect = (
         resource: string,
         extraQueryParameters: any,
         claims: any,
-    ) {
+    ) => {
         if (!canAcquireToken(resource)) {
             return
         }
@@ -716,7 +717,7 @@ export let createAuthenticationContext = (config: Config): AuthenticationContext
         promptUser(urlNavigate)
     }
 
-    function canAcquireToken(resource: string): boolean {
+    let canAcquireToken = (resource: string): boolean => {
         let error: string | undefined
         if (!resource) {
             error = "Resource is required"
@@ -737,7 +738,7 @@ export let createAuthenticationContext = (config: Config): AuthenticationContext
     /**
      * Redirects the browser to Azure AD authorization endpoint.
      */
-    function promptUser(url: string) {
+    let promptUser = (url: string) => {
         if (url) {
             if (process.env.NODE_ENV === "development") {
                 Logger.infoPii("Navigate to:" + url)
@@ -750,7 +751,7 @@ export let createAuthenticationContext = (config: Config): AuthenticationContext
         }
     }
 
-    function clearCache() {
+    let clearCache = () => {
         saveItem(StorageKey.LOGIN_REQUEST, "")
         saveItem(StorageKey.SESSION_STATE, "")
         saveItem(StorageKey.STATE_LOGIN, "")
@@ -779,7 +780,7 @@ export let createAuthenticationContext = (config: Config): AuthenticationContext
      * Redirects user to logout endpoint.
      * After logout, it will redirect to postLogoutRedirectUri if added as a property on the config object.
      */
-    function logout() {
+    let logout = () => {
         clearCache()
         _user = null
         let urlNavigate: string
@@ -809,7 +810,7 @@ export let createAuthenticationContext = (config: Config): AuthenticationContext
      * domain_hint can be one of users/organisations which when added skips the email based discovery process of the user.
      * @ignore
      */
-    function addHintParameters(url: string) {
+    let addHintParameters = (url: string) => {
         //If you dont use prompt=none, then if the session does not exist, there will be a failure.
         //If sid is sent alongside domain or login hints, there will be a failure since request is ambiguous.
         //If sid is sent with a prompt value other than none or attempt_none, there will be a failure since the request is ambiguous.
@@ -847,7 +848,7 @@ export let createAuthenticationContext = (config: Config): AuthenticationContext
      * Creates a user object by decoding the id_token
      * @ignore
      */
-    function createUser(idToken: string) {
+    let createUser = (idToken: string) => {
         let json = extractIdToken(idToken)
         if (!has(json, "aud")) {
             return
@@ -866,17 +867,9 @@ export let createAuthenticationContext = (config: Config): AuthenticationContext
     }
 
     /**
-     * Gets login error
-     * @returns {string} error message related to login.
-     */
-    function getLoginError() {
-        return getItem(StorageKey.LOGIN_ERROR)
-    }
-
-    /**
      * Creates a requestInfo object from the URL fragment and returns it.
      */
-    function getRequestInfo(hash: string): RequestInfo {
+    let getRequestInfo = (hash: string): RequestInfo => {
         let requestInfo: RequestInfo = {
             valid: false,
             parameters: {},
@@ -935,7 +928,7 @@ export let createAuthenticationContext = (config: Config): AuthenticationContext
      * Matches state from the request with the response.
      * @ignore
      */
-    function matchState(requestInfo: any) {
+    let matchState = (requestInfo: any) => {
         let loginStates = getItem(StorageKey.STATE_LOGIN)
         if (loginStates) {
             for (let state of loginStates.split(CACHE_DELIMETER)) {
@@ -964,7 +957,7 @@ export let createAuthenticationContext = (config: Config): AuthenticationContext
     /**
      * Saves token or error received in the response from AAD in the cache. In case of id_token, it also creates the user object.
      */
-    function saveTokenFromHash(requestInfo: RequestInfo) {
+    let saveTokenFromHash = (requestInfo: RequestInfo) => {
         if (process.env.NODE_ENV === "development") {
             Logger.info(
                 "State status:" +
@@ -1116,7 +1109,7 @@ export let createAuthenticationContext = (config: Config): AuthenticationContext
      * This method must be called for processing the response received from AAD. It extracts the hash, processes the token or error, saves it in the cache and calls the registered callbacks with the result.
      * @param {string} [hash=window.location.hash] - Hash fragment of Url.
      */
-    function handleWindowCallback(hash: string = window.location.hash) {
+    let handleWindowCallback = (hash: string = window.location.hash) => {
         if (!isCallback(hash)) return
 
         let self!: AuthenticationContext
@@ -1206,7 +1199,7 @@ export let createAuthenticationContext = (config: Config): AuthenticationContext
     /**
      * Returns the decoded id_token.
      */
-    function extractIdToken(encodedIdToken: string) {
+    let extractIdToken = (encodedIdToken: string) => {
         // TODO: decodeJWT can be inlined.
         let decodedToken = decodeJWT(encodedIdToken)
         if (!decodedToken) {
@@ -1235,7 +1228,7 @@ export let createAuthenticationContext = (config: Config): AuthenticationContext
     /**
      * Decodes a string of data which has been encoded using base-64 encoding.
      */
-    function base64DecodeStringUrlSafe(base64IdToken: string) {
+    let base64DecodeStringUrlSafe = (base64IdToken: string) => {
         base64IdToken = base64IdToken.replace(/-/g, "+").replace(/_/g, "/")
         return decodeURIComponent(escape(window.atob(base64IdToken)))
     }
@@ -1243,7 +1236,7 @@ export let createAuthenticationContext = (config: Config): AuthenticationContext
     /**
      * Adds the hidden iframe for silent token renewal
      */
-    function addAdalFrame(iframeId: string) {
+    let addAdalFrame = (iframeId: string) => {
         let adalFrame = document.getElementById(iframeId)
         if (adalFrame) {
             return adalFrame
@@ -1260,7 +1253,7 @@ export let createAuthenticationContext = (config: Config): AuthenticationContext
         return window.frames && window.frames[iframeId as any]
     }
 
-    let ctx: AuthenticationContext = ((window as any)[SINGLETON] = {
+    let ctx: AuthenticationContext = {
         config,
         login,
         logout,
@@ -1270,13 +1263,12 @@ export let createAuthenticationContext = (config: Config): AuthenticationContext
         acquireTokenPopup,
         getRequestInfo,
         saveTokenFromHash,
-        loginInProgress: () => _loginInProgress,
         handleWindowCallback,
         _callBackMappedToRenewStates,
         _callBacksMappedToRenewStates,
-    })
-    return ctx
-}) as any
+    }
+    return ((window as any)[SINGLETON] = ctx)
+}
 
 export let clearCacheForResource = (resource: string) => {
     saveItem(StorageKey.STATE_RENEW, "")
@@ -1288,45 +1280,6 @@ export let clearCacheForResource = (resource: string) => {
         saveItem(StorageKey.EXPIRATION_KEY + resource, 0)
     }
 }
-
-/**
- * Gets resource for given endpoint if mapping is provided with config.
- */
-// export function getResourceForEndpoint(endpoint: string): string | undefined {
-//     // if user specified list of anonymous endpoints, no need to send token to these endpoints, return null.
-//     if (config.anonymousEndpoints) {
-//         for (let i = 0; i < config.anonymousEndpoints.length; i++) {
-//             if (endpoint.indexOf(config.anonymousEndpoints[i]) > -1) {
-//                 return
-//             }
-//         }
-//     }
-
-//     if (config.endpoints) {
-//         for (let configEndpoint in config.endpoints) {
-//             // configEndpoint is like /api/Todo requested endpoint can be /api/Todo/1
-//             if (endpoint.indexOf(configEndpoint) > -1) {
-//                 return config.endpoints[configEndpoint]
-//             }
-//         }
-//     }
-
-//     // default resource will be clientid if nothing specified
-//     // App will use idtoken for calls to itself
-//     // check if it's staring from http or https, needs to match with app host
-//     if (
-//         endpoint.indexOf("http://") > -1 ||
-//         endpoint.indexOf("https://") > -1
-//     ) {
-//         if (haveSameHost(endpoint, config.redirectUri)) {
-//             return config.loginResource
-//         }
-//     } else {
-//         // in angular level, the url for $http interceptor call could be relative url,
-//         // if it's relative call, we'll treat it as app backend call.
-//         return config.loginResource
-//     }
-// }
 
 let decodeJWT = (
     jwt: string,
@@ -1622,7 +1575,7 @@ interface IStorage {
 }
 
 let Storage: IStorage = (() => {
-    function supportsStorage(type: string) {
+    let supportsStorage = (type: string) => {
         let storage = (window as any)[type]
         if (!storage) {
             return false
