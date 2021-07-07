@@ -3,7 +3,7 @@
     "main": "README.md",
     "private": true,
     "engines": {
-        "node": "^14.0.0"
+        "node": "^16.0.0"
     },
     "workspaces": [
         "packages/*"
