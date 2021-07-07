@@ -13,7 +13,6 @@
     "type": "module",
     "sideEffects": false,
     "files": [
-        "src",
         "dist"
     ]
 }
