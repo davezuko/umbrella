@@ -14,14 +14,13 @@
         "build": "node Makefile.mjs build",
         "format": "node Makefile.mjs format"
     },
-    "prettier": {
-        "semi": false,
-        "tabWidth": 4,
-        "bracketSpacing": false,
-        "trailingComma": "all"
+    "prettier": "@davezuko/config/prettier",
+    "eslint": {
+        "extends": "@davezuko/config/eslint"
     },
     "devDependencies": {
         "@types/node": "^15.12.2",
+        "eslint": "^7.32.0",
         "prettier": "^2.3.1",
         "typescript": "^4.3.2"
     }
