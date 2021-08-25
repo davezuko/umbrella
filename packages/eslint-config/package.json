@@ -1,6 +1,6 @@
 {
     "name": "@davezuko/eslint-config",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "license": "MIT",
     "description": "My preferred eslint configuration",
     "homepage": "https://github.com/davezuko/umbrella/tree/master/packages/eslint-config",
