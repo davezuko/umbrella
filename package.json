@@ -14,7 +14,7 @@
         "build": "node Makefile.mjs build",
         "format": "node Makefile.mjs format"
     },
-    "prettier": "@davezuko/eslint-config/prettier",
+    "prettier": "@davezuko/prettier-config",
     "eslintConfig": {
         "extends": "@davezuko/eslint-config"
     },

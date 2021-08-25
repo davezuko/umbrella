@@ -1,0 +1,12 @@
+{
+    "name": "@davezuko/prettier-config",
+    "version": "0.1.0",
+    "license": "MIT",
+    "description": "My preferred prettier configuration",
+    "homepage": "https://github.com/davezuko/umbrella/tree/master/packages/prettier-config",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/davezuko/umbrella.git"
+    },
+    "main": "index.js"
+}

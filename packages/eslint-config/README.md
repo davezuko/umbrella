@@ -1,6 +1,6 @@
 # @davezuko/eslint-config
 
-My standard configuration files for eslint and prettier.
+My preferred eslint configuration.
 
 ## Usage
 
@@ -11,7 +11,7 @@ yarn add --dev @davezuko/eslint-config
 ```js
 // package.json
 {
-    "prettier": "@davezuko/eslint-config/prettier",
+    "prettier": "@davezuko/prettier-config",
     "eslintConfig": {
         "extends": "@davezuko/eslint-config"
     }
