@@ -20,6 +20,7 @@ enum RequestType {
     RENEW_TOKEN = "RENEW_TOKEN",
     UNKNOWN = "UNKNOWN",
 }
+
 enum ResponseType {
     ID_TOKEN = "id_token token",
     TOKEN = "token",
@@ -159,7 +160,7 @@ export let createAuthenticationContext = (
                         errorDesc: any,
                         token: any,
                         error: any,
-                        tokenType: any,
+                        _tokenType: any,
                     ) => {
                         if (error) {
                             reject(error)
@@ -249,12 +250,12 @@ export let createAuthenticationContext = (
         resource?: string,
         callback?: any,
     ) => {
-        var popupWindow = openPopup(urlNavigate, "login", 483, 600)
-        var loginCallback = callback || config.callback
+        let popupWindow = openPopup(urlNavigate, "login", 483, 600)
+        let loginCallback = callback || config.callback
 
         if (!popupWindow) {
-            var error = "Error opening popup"
-            var errorDesc =
+            let error = "Error opening popup"
+            let errorDesc =
                 "Popup Window is null. This can happen if you are using IE"
             handlePopupError(
                 loginCallback,
@@ -488,7 +489,7 @@ export let createAuthenticationContext = (
                             resource,
                     )
                 }
-                var expectedState = _activeRenewals[resource]
+                let expectedState = _activeRenewals[resource]
 
                 if (
                     expectedState &&
@@ -620,7 +621,7 @@ export let createAuthenticationContext = (
             return
         }
 
-        var expectedState = guid() + RESOURCE_DELIMETER + resource
+        let expectedState = guid() + RESOURCE_DELIMETER + resource
         config.state = expectedState
         _renewStates.push(expectedState)
         _requestType = RequestType.RENEW_TOKEN
@@ -628,7 +629,7 @@ export let createAuthenticationContext = (
             Logger.verbose("Renew token Expected state: " + expectedState)
         }
         // remove the existing prompt=... query parameter and add prompt=select_account
-        var urlNavigate = removeQueryStringParameter(
+        let urlNavigate = removeQueryStringParameter(
             getNavigateUrl("token", resource),
             "prompt",
         )
@@ -665,6 +666,7 @@ export let createAuthenticationContext = (
      * @param {string}   resource  ResourceUri identifying the target resource
      * @param {string}   extraQueryParameters  extraQueryParameters to add to the authentication request
      */
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     let acquireTokenRedirect = (
         resource: string,
         extraQueryParameters: any,
@@ -681,7 +683,7 @@ export let createAuthenticationContext = (
         }
 
         // remove the existing prompt=... query parameter and add prompt=select_account
-        var urlNavigate = removeQueryStringParameter(
+        let urlNavigate = removeQueryStringParameter(
             getNavigateUrl("token", resource),
             "prompt",
         )
@@ -755,11 +757,11 @@ export let createAuthenticationContext = (
         saveItem(StorageKey.ERROR_DESCRIPTION, "")
         saveItem(StorageKey.LOGIN_ERROR, "")
         saveItem(StorageKey.LOGIN_ERROR, "")
-        var keys = getItem(StorageKey.TOKEN_KEYS) as any
+        let keys = getItem(StorageKey.TOKEN_KEYS) as any
 
         if (!isEmpty(keys)) {
             keys = keys.split(RESOURCE_DELIMETER)
-            for (var i = 0; i < keys.length && keys[i] !== ""; i++) {
+            for (let i = 0; i < keys.length && keys[i] !== ""; i++) {
                 saveItem(StorageKey.ACCESS_TOKEN_KEY + keys[i], "")
                 saveItem(StorageKey.EXPIRATION_KEY + keys[i], 0)
             }
@@ -828,7 +830,7 @@ export let createAuthenticationContext = (
                 !urlContainsQueryStringParameter("domain_hint", url) &&
                 _user.profile.upn.indexOf("@") > -1
             ) {
-                var parts = _user.profile.upn.split("@")
+                let parts = _user.profile.upn.split("@")
                 // local part can include @ in quotes. Sending last part handles that.
                 url += "&domain_hint=" + encode(parts[parts.length - 1])
             }
@@ -1309,7 +1311,9 @@ let readConfig = (config: Config): Config => {
         expireOffsetSeconds: 300,
         navigateToLoginRequestUrl: true,
         tenant: "common",
-        callback: () => {},
+        callback: () => {
+            // noop
+        },
         ...config,
     }
     if (!config.redirectUri) {
@@ -1588,7 +1592,14 @@ let Storage: IStorage = (() => {
 
     if (supportsStorage("localStorage")) return localStorage
     if (supportsStorage("sessionStorage")) return sessionStorage
-    return {getItem() {}, setItem() {}} as IStorage
+    return {
+        getItem() {
+            // noop
+        },
+        setItem() {
+            // noop
+        },
+    } as IStorage
 })()
 
 export enum LogLevel {

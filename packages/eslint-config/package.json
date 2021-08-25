@@ -1,19 +1,17 @@
 {
-    "name": "@davezuko/config",
+    "name": "@davezuko/eslint-config",
     "version": "0.1.0",
     "license": "MIT",
-    "description": "my standard configuration files",
+    "description": "My preferred eslint configuration",
     "homepage": "https://github.com/davezuko/umbrella/tree/master/packages/eslint-config",
     "repository": {
         "type": "git",
         "url": "https://github.com/davezuko/umbrella.git"
     },
-    "main": "README.md",
-    "peerDependencies": {
-        "eslint": "^7.31.0",
-        "prettier": "^2.3.2"
-    },
+    "main": "index.js",
     "dependencies": {
+        "eslint": "^7.31.0",
+        "prettier": "^2.3.2",
         "@typescript-eslint/eslint-plugin": "^4.28.5",
         "@typescript-eslint/parser": "^4.28.5",
         "eslint-config-prettier": "^8.3.0",
