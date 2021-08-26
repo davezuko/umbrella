@@ -9,10 +9,8 @@
         "packages/*"
     ],
     "scripts": {
-        "make": "node Makefile.mjs",
-        "clean": "node Makefile.mjs clean",
-        "build": "node Makefile.mjs build",
-        "format": "node Makefile.mjs format"
+        "build": "tsc --build --force",
+        "lint": "eslint ."
     },
     "prettier": "@davezuko/prettier-config",
     "eslintConfig": {
