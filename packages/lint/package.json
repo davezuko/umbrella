@@ -10,9 +10,9 @@
     },
     "main": "index.js",
     "dependencies": {
-        "eslint": "^7.31.0",
-        "prettier": "^2.3.2",
+        "@davezuko/eslint-config": "^0.1.0",
         "@davezuko/prettier-config": "^0.1.0",
-        "@davezuko/eslint-config": "^0.1.0"
+        "eslint": "^7.31.0",
+        "prettier": "^2.4.1"
     }
 }

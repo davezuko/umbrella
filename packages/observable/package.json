@@ -1,9 +1,9 @@
 {
-    "name": "@davezuko/adal",
-    "version": "0.2.0",
-    "license": "Apache-2.0",
-    "description": "Modern, slimmer fork of Microsoft's ADAL library",
-    "homepage": "https://github.com/davezuko/umbrella/tree/master/packages/adal",
+    "name": "@davezuko/observable",
+    "version": "0.0.0",
+    "license": "MIT",
+    "description": "Tiny, general purpose observable utilities",
+    "homepage": "https://github.com/davezuko/umbrella/tree/master/packages/observable",
     "repository": {
         "type": "git",
         "url": "https://github.com/davezuko/umbrella.git"

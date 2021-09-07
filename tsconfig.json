@@ -1,5 +1,9 @@
 {
     "files": [],
     "include": [],
-    "references": [{"path": "./packages/adal"}]
+    "references": [
+        {"path": "./packages/adal"},
+        {"path": "./packages/observable"},
+        {"path": "./packages/testing"}
+    ]
 }

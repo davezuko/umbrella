@@ -1,0 +1,30 @@
+{
+    "name": "@davezuko/testing",
+    "version": "0.0.0",
+    "license": "MIT",
+    "description": "Simple test utilities based on Go",
+    "homepage": "https://github.com/davezuko/umbrella/tree/master/packages/testing",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/davezuko/umbrella.git"
+    },
+    "type": "module",
+    "source": "./src/index.ts",
+    "main": "./dist/index.cjs",
+    "exports": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "sideEffects": false,
+    "bin": {
+        "test": "./bin/test.js"
+    },
+    "files": [
+        "dist"
+    ],
+    "devDependencies": {
+        "@types/sprintf-js": "^1.1.2"
+    },
+    "dependencies": {
+        "esbuild": "^0.13.3",
+        "sprintf-js": "^1.1.2"
+    }
+}
