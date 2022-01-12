@@ -5,6 +5,7 @@ default: packages test
 .PHONY: packages
 packages:
 	$(MAKE) package dir=adal
+	$(MAKE) package dir=esbuild-plugin-preact
 	$(MAKE) package dir=observable
 	$(MAKE) package dir=testing
 
