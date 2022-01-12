@@ -1,6 +1,6 @@
 {
     "name": "@davezuko/esbuild-plugin-preact",
-    "version": "0.0.0",
+    "version": "0.1.0",
     "license": "MIT",
     "description": "esbuild plugin to replace react and react-dom with preact/compat",
     "homepage": "https://github.com/davezuko/umbrella/tree/master/packages/esbuild-plugin-preact",

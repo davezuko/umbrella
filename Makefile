@@ -13,6 +13,14 @@ package:
 	rm -rf packages/$(dir)/dist
 	yarn microbundle build --cwd packages/$(dir) $(MICROBUNDLE_FLAGS)
 
+publish:
+	$(MAKE) package dir=$(dir)
+	npm publish ./packages/$(dir) --access public
+
+publish-dry:
+	$(MAKE) package dir=$(dir)
+	npm publish ./packages/$(dir) --access public --dry-run
+
 .PHONY: test
 test:
 	yarn test
