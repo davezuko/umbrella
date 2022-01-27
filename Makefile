@@ -1,4 +1,8 @@
-MICROBUNDLE_FLAGS=--format modern,cjs --no-compress --no-sourcemap --external react
+MICROBUNDLE_FLAGS=\
+--format modern,cjs \
+--no-compress \
+--no-sourcemap \
+--external react,esbuild,express,compression
 
 default: packages test
 
@@ -7,6 +11,7 @@ packages:
 	$(MAKE) package dir=adal
 	$(MAKE) package dir=esbuild-plugin-preact
 	$(MAKE) package dir=observable
+	$(MAKE) package dir=smite
 	$(MAKE) package dir=testing
 
 package:
