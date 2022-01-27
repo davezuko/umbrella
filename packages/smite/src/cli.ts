@@ -1,6 +1,6 @@
 import * as api from "./api"
 
-export let run = async (osArgs: string) => {
+export let run = async (osArgs: string): Promise<number> => {
     let command = ""
     let flags: string[] = []
     for (let arg of osArgs) {
@@ -13,57 +13,94 @@ export let run = async (osArgs: string) => {
             continue
         }
     }
+
+    let handle = async (result: Promise<any>) => {
+        try {
+            await result
+            return 0
+        } catch (e) {
+            console.error(e.message)
+            return 1
+        }
+    }
+
+    let config = await api.loadProjectConfig()
+    let buildOptions = api.createBuildOptions()
+    let serveOptions = api.createServeOptions()
+
     switch (command) {
         case "build": {
-            let buildOptions = api.createBuildOptions()
             buildOptions.minify = true
-            applyBuildFlags(buildOptions, flags)
 
-            await api.build(buildOptions)
-            break
+            applyProjectConfig(config, buildOptions, serveOptions)
+            applyCLIFlags(flags, buildOptions, serveOptions)
+
+            return handle(api.build(buildOptions))
         }
         case "serve": {
-            let serveOptions = api.createServeOptions()
-            applyServeFlags(serveOptions, flags)
+            applyProjectConfig(config, buildOptions, serveOptions)
+            applyCLIFlags(flags, buildOptions, serveOptions)
 
-            await api.serve(serveOptions)
-            break
+            return handle(api.serve(serveOptions))
         }
         case "start": {
-            let buildOptions = api.createBuildOptions()
             buildOptions.minify = false
-            applyBuildFlags(buildOptions, flags)
 
-            let serveOptions = api.createServeOptions()
-            applyServeFlags(serveOptions, flags)
+            applyProjectConfig(config, buildOptions, serveOptions)
+            applyCLIFlags(flags, buildOptions, serveOptions)
 
-            await api.start(buildOptions, serveOptions)
-            break
+            return handle(api.start(buildOptions, serveOptions))
+        }
+        default: {
+            return 1
         }
     }
 }
 
-let applyServeFlags = (options: api.ServeOptions, args: string[]) => {
-    for (let arg of args) {
-        if (arg.startsWith("--host")) {
-            let val = arg.split("=")[1]
-            if (val) {
-                options.host = val
-            }
-        }
-        if (arg.startsWith("--port")) {
-            let val = arg.split("=")[1]
-            if (val) {
-                options.port = Number.parseInt(val)
-            }
-        }
+let applyProjectConfig = (
+    project: api.ProjectConfig,
+    buildOptions: api.BuildOptions,
+    serveOptions: api.ServeOptions,
+) => {
+    for (let [key, value] of Object.entries(project.build)) {
+        buildOptions[key] = value
+    }
+    for (let [key, value] of Object.entries(project.serve)) {
+        serveOptions[key] = value
     }
 }
 
-let applyBuildFlags = (options: api.BuildOptions, args: string[]) => {
-    for (let arg of args) {
-        if (arg.startsWith("--minify")) {
-            options.minify = true
+let applyCLIFlags = (
+    flags: string[],
+    buildOptions: api.BuildOptions,
+    serveOptions: api.ServeOptions,
+) => {
+    let parseBoolFlag = (flag: string): boolean => {
+        let val = flag.split("=")[1]
+        if (!val) {
+            return true
+        }
+        return flag === "1" || flag === "true"
+    }
+
+    for (let flag of flags) {
+        if (flag.startsWith("--minify")) {
+            buildOptions.minify = parseBoolFlag(flag)
+            continue
+        }
+        if (flag.startsWith("--host")) {
+            let val = flag.split("=")[1]
+            if (val) {
+                serveOptions.host = val
+            }
+            continue
+        }
+        if (flag.startsWith("--port")) {
+            let val = flag.split("=")[1]
+            if (val) {
+                serveOptions.port = Number.parseInt(val)
+            }
+            continue
         }
     }
 }
