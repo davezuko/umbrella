@@ -1,0 +1,15 @@
+.DS_Store
+*.log
+node_modules
+.rpt2_cache
+logs
+.env
+.vscode
+
+# prefer yarn.lock
+package-lock.json
+
+# generated files
+.cache
+dist
+tsconfig.tsbuildinfo

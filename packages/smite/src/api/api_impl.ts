@@ -5,19 +5,14 @@ import * as esbuild from "esbuild"
 import * as express from "express"
 import * as compression from "compression"
 import copydir from "copy-dir"
-
-export type BuildOptions = esbuild.BuildOptions
-
-export interface ServeOptions {
-    protocol: "http" | "https"
-    host: string
-    port: number
-}
-
-export interface ProjectConfig {
-    build: Partial<BuildOptions>
-    serve: Partial<ServeOptions>
-}
+import type {
+    BuildOptions,
+    CreateProjectOptions,
+    CreateProjectResult,
+    ProjectConfig,
+    ServeOptions,
+    ServeResult,
+} from "./api"
 
 export let loadProjectConfig = async (): Promise<ProjectConfig> => {
     let dir = process.cwd()
@@ -109,11 +104,6 @@ export let build = async (buildOptions: BuildOptions) => {
     return result
 }
 
-export interface ServeResult {
-    host: string
-    port: number
-    stop(): Promise<void>
-}
 export let serve = async (serveOptions: ServeOptions) => {
     let app = express()
     app.use(compression())
@@ -160,4 +150,14 @@ export let start = async (
             result.stop()
         },
     }
+}
+
+export let createNewProject = async (
+    options: CreateProjectOptions,
+): Promise<CreateProjectResult> => {
+    let result: CreateProjectResult = {
+        dir: options.dir,
+    }
+    throw new Error("not implemented")
+    return result
 }

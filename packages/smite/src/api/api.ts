@@ -20,6 +20,14 @@ export interface ServeResult {
     stop(): Promise<void>
 }
 
+export interface CreateProjectOptions {
+    dir: string
+}
+
+export interface CreateProjectResult {
+    dir: string
+}
+
 export let loadProjectConfig = (): Promise<ProjectConfig> => {
     return impl.loadProjectConfig()
 }
@@ -45,4 +53,10 @@ export let start = (
     serveOptions: ServeOptions,
 ): Promise<ServeResult> => {
     return impl.start(buildOptions, serveOptions)
+}
+
+export let createNewProject = (
+    options: CreateProjectOptions,
+): Promise<CreateProjectResult> => {
+    return impl.createNewProject(options)
 }

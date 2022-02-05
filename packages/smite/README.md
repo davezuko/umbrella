@@ -9,6 +9,9 @@ yarn add --dev @davezuko/smite
 ## Usage
 
 ```sh
+# create a new project
+yarn smite new
+
 # start the development server
 yarn smite start
 
@@ -19,8 +22,7 @@ yarn smite build
 yarn smite serve
 
 # cli flags
-yarn
-
+yarn smite start --mode=production
 ```
 
 ```js
@@ -33,7 +35,7 @@ smite.build().then((result) => {
 
 ## Configuration
 
-```json
+```js
 // package.json
 {
     "smite": {
@@ -44,12 +46,20 @@ smite.build().then((result) => {
         "serve": {
             "port": 8080,
             "host": "localhost"
+        },
+        "modes": {
+            "development": {
+                "minify": false
+            },
+            "production": {
+                "minify": true
+            }
         }
     }
 }
 ```
 
-```json
+```js
 // package.json
 {
     "exports": {

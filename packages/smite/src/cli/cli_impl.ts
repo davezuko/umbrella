@@ -60,6 +60,11 @@ let runCommand = async (
             }
             break
         }
+        case "new": {
+            let dir = flags.find((flag) => flag[0] !== "-")
+            await api.createNewProject({dir})
+            return
+        }
         case "serve": {
             finalizeConfig(ctx, flags)
             await api.serve(ctx.serveOptions)
