@@ -28,12 +28,18 @@ export interface CreateProjectResult {
     dir: string
 }
 
-export let loadProjectConfig = (): Promise<ProjectConfig> => {
-    return impl.loadProjectConfig()
+export let loadProjectConfig = (dir?: string): Promise<ProjectConfig> => {
+    return impl.loadProjectConfig(dir)
 }
 
 export let createBuildOptions = (): BuildOptions => {
     return impl.createBuildOptions()
+}
+
+export let createNewProject = (
+    options: CreateProjectOptions,
+): Promise<CreateProjectResult> => {
+    return impl.createNewProject(options)
 }
 
 export let createServeOptions = (): ServeOptions => {
@@ -53,10 +59,4 @@ export let start = (
     serveOptions: ServeOptions,
 ): Promise<ServeResult> => {
     return impl.start(buildOptions, serveOptions)
-}
-
-export let createNewProject = (
-    options: CreateProjectOptions,
-): Promise<CreateProjectResult> => {
-    return impl.createNewProject(options)
 }

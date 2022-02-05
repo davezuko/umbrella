@@ -14,8 +14,10 @@ import type {
     ServeResult,
 } from "./api"
 
-export let loadProjectConfig = async (): Promise<ProjectConfig> => {
-    let dir = process.cwd()
+export let loadProjectConfig = async (dir?: string): Promise<ProjectConfig> => {
+    if (!dir) {
+        dir = process.cwd()
+    }
     let prv = ""
     while (prv !== dir) {
         prv = dir
