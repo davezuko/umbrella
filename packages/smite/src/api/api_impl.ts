@@ -3,8 +3,8 @@ import * as path from "path"
 import * as util from "util"
 import * as esbuild from "esbuild"
 import * as express from "express"
-import * as copydir from "copy-dir"
 import * as compression from "compression"
+import copydir from "copy-dir"
 
 export type BuildOptions = esbuild.BuildOptions
 
@@ -30,7 +30,9 @@ export let loadProjectConfig = async (): Promise<ProjectConfig> => {
             let raw = await fs.promises.readFile(file, "utf8")
             console.debug("using package.json file: %s", file)
             let pkg = JSON.parse(raw)
-            return readPackageJSON(pkg)
+            let cfg = readPackageJSON(pkg)
+            cfg.build.absWorkingDir = file
+            return cfg
         } catch (e) {}
         dir = path.join(dir, "..")
     }
@@ -101,7 +103,7 @@ export let build = async (buildOptions: BuildOptions) => {
     try {
         let stat = await fs.promises.lstat("./static")
         if (stat.isDirectory()) {
-            await util.promisify(copydir.default)("./static", "./dist")
+            await util.promisify(copydir)("./static", "./dist")
         }
     } catch (e) {}
     return result
