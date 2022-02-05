@@ -2,7 +2,7 @@ MICROBUNDLE_FLAGS=\
 --format modern,cjs \
 --no-compress \
 --no-sourcemap \
---external react,esbuild,express,compression
+--external react,esbuild,express,compression,copy-dir
 
 default: packages test
 

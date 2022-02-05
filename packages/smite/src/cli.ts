@@ -1,4 +1,5 @@
 import * as api from "./api"
+import * as esbuild from "esbuild"
 
 export let run = async (osArgs: string): Promise<number> => {
     let command = ""
@@ -14,7 +15,7 @@ export let run = async (osArgs: string): Promise<number> => {
         }
     }
 
-    let handle = async (result: Promise<any>) => {
+    let toExitCode = async (result: Promise<any>) => {
         try {
             await result
             return 0
@@ -35,13 +36,23 @@ export let run = async (osArgs: string): Promise<number> => {
             applyProjectConfig(config, buildOptions, serveOptions)
             applyCLIFlags(flags, buildOptions, serveOptions)
 
-            return handle(api.build(buildOptions))
+            return toExitCode(
+                (async () => {
+                    let result = await api.build(buildOptions)
+                    if (result.metafile) {
+                        let text = await esbuild.analyzeMetafile(
+                            result.metafile,
+                        )
+                        console.log(text)
+                    }
+                })(),
+            )
         }
         case "serve": {
             applyProjectConfig(config, buildOptions, serveOptions)
             applyCLIFlags(flags, buildOptions, serveOptions)
 
-            return handle(api.serve(serveOptions))
+            return toExitCode(api.serve(serveOptions))
         }
         case "start": {
             buildOptions.minify = false
@@ -49,7 +60,7 @@ export let run = async (osArgs: string): Promise<number> => {
             applyProjectConfig(config, buildOptions, serveOptions)
             applyCLIFlags(flags, buildOptions, serveOptions)
 
-            return handle(api.start(buildOptions, serveOptions))
+            return toExitCode(api.start(buildOptions, serveOptions))
         }
         default: {
             return 1
