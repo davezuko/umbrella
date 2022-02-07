@@ -11,6 +11,7 @@ yarn add --dev @davezuko/smite
 ```sh
 # create a new project
 yarn smite new
+yarn smite new --url=https://github.com/davezuko/templates --dir=web-app
 
 # start the development server
 yarn smite start

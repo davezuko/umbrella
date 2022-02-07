@@ -22,6 +22,10 @@ export interface ServeResult {
 
 export interface CreateProjectOptions {
     dir: string
+    template: {
+        url: string
+        dir: string
+    }
 }
 
 export interface CreateProjectResult {

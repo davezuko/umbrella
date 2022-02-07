@@ -1,10 +1,12 @@
 import * as fs from "fs"
+import * as os from "os"
+import * as cp from "child_process"
 import * as path from "path"
 import * as util from "util"
 import * as esbuild from "esbuild"
 import * as express from "express"
 import * as compression from "compression"
-import copydir from "copy-dir"
+import _copydir from "copy-dir"
 import type {
     BuildOptions,
     CreateProjectOptions,
@@ -13,6 +15,9 @@ import type {
     ServeOptions,
     ServeResult,
 } from "./api"
+
+let exec = util.promisify(cp.exec)
+let copydir = util.promisify(_copydir)
 
 export let loadProjectConfig = async (dir?: string): Promise<ProjectConfig> => {
     if (!dir) {
@@ -100,7 +105,7 @@ export let build = async (buildOptions: BuildOptions) => {
     try {
         let stat = await fs.promises.lstat("./static")
         if (stat.isDirectory()) {
-            await util.promisify(copydir)("./static", "./dist")
+            await copydir("./static", "./dist")
         }
     } catch (e) {}
     return result
@@ -157,9 +162,36 @@ export let start = async (
 export let createNewProject = async (
     options: CreateProjectOptions,
 ): Promise<CreateProjectResult> => {
+    if (!options.dir) {
+        throw new Error("missing target directory (options.dir)")
+    }
+    if (fs.existsSync(options.dir)) {
+        throw new Error("destination already exists: " + options.dir)
+    }
+
     let result: CreateProjectResult = {
         dir: options.dir,
     }
-    throw new Error("not implemented")
+    let prefix = path.join(os.tmpdir(), "smite-")
+    let tmp = await fs.promises.mkdtemp(prefix)
+    console.debug("created temp directory: %s", tmp)
+    try {
+        console.debug("clone template to: %s", tmp)
+        await exec(`git clone ${options.template.url} ${tmp}`)
+        let template = path.join(tmp, options.template.dir)
+        console.debug("copy %s to %s", template, options.dir)
+        await copydir(template, options.dir)
+        console.debug("install dependencies")
+        await exec("yarn install", {
+            cwd: options.dir,
+        })
+    } finally {
+        console.debug("remove temp directory: %s", tmp)
+        try {
+            await fs.promises.rm(tmp, {recursive: true})
+        } catch (e) {
+            // TODO
+        }
+    }
     return result
 }

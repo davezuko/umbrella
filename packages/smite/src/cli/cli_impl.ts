@@ -10,13 +10,10 @@ export let run = async (osArgs: string): Promise<number> => {
     let command = ""
     let args: string[] = []
     for (let arg of osArgs) {
-        if (arg[0] === "-") {
-            args.push(arg)
-            continue
-        }
         if (!command) {
             command = arg
-            continue
+        } else {
+            args.push(arg)
         }
     }
     try {
@@ -31,7 +28,7 @@ export let run = async (osArgs: string): Promise<number> => {
 let runCommand = async (command: string, args: string[]): Promise<void> => {
     switch (command) {
         case "debug": {
-            let ctx = await loadContext(args)
+            let ctx = await finalizeOptions(args)
             console.debug({
                 build: ctx.buildOptions,
                 serve: ctx.serveOptions,
@@ -39,7 +36,7 @@ let runCommand = async (command: string, args: string[]): Promise<void> => {
             break
         }
         case "build": {
-            let ctx = await loadContext(args, (ctx) => {
+            let ctx = await finalizeOptions(args, (ctx) => {
                 ctx.buildOptions.minify = true
             })
             let result = await api.build(ctx.buildOptions)
@@ -50,20 +47,42 @@ let runCommand = async (command: string, args: string[]): Promise<void> => {
             break
         }
         case "new": {
-            let dir = args.find((arg) => arg[0] !== "-")
             let options: api.CreateProjectOptions = {
-                dir,
+                dir: "",
+                template: {
+                    url: "",
+                    dir: "",
+                },
+            }
+            for (let arg of args) {
+                if (!options.dir && arg[0] !== "-") {
+                    options.dir = arg
+                    continue
+                }
+                let [name, value] = arg.split("=")
+                switch (name) {
+                    case "url":
+                        options.template.url = value
+                        break
+                    case "dir":
+                        options.template.dir = value
+                        break
+                }
+            }
+            if (!options.template.url) {
+                options.template.url = "https://github.com/davezuko/templates"
+                options.template.dir = "web-app"
             }
             await api.createNewProject(options)
             break
         }
         case "serve": {
-            let ctx = await loadContext(args)
+            let ctx = await finalizeOptions(args)
             await api.serve(ctx.serveOptions)
             break
         }
         case "start": {
-            let ctx = await loadContext(args, (ctx) => {
+            let ctx = await finalizeOptions(args, (ctx) => {
                 ctx.buildOptions.minify = false
             })
             await api.start(ctx.buildOptions, ctx.serveOptions)
@@ -75,7 +94,7 @@ let runCommand = async (command: string, args: string[]): Promise<void> => {
     }
 }
 
-let loadContext = async (
+let finalizeOptions = async (
     args: string[],
     customize?: (ctx: Context) => void,
 ): Promise<Context> => {
