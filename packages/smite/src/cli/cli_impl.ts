@@ -20,6 +20,7 @@ export let run = async (osArgs: string): Promise<number> => {
         await runCommand(command, args)
         return 0
     } catch (e) {
+        // @ts-expect-error
         console.error(e.message)
         return 1
     }
@@ -111,9 +112,11 @@ let finalizeOptions = async (
     // apply project configuration
     let project = await api.loadProjectConfig()
     for (let [key, value] of Object.entries(project.build)) {
+        // @ts-ignore
         ctx.buildOptions[key] = value
     }
     for (let [key, value] of Object.entries(project.serve)) {
+        // @ts-ignore
         ctx.serveOptions[key] = value
     }
 

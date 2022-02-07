@@ -10,11 +10,15 @@
     ],
     "scripts": {
         "build": "tsc --build --force",
-        "lint": "eslint ."
+        "lint": "eslint .",
+        "format": "prettier . --write"
     },
     "prettier": "@davezuko/prettier-config",
     "eslintConfig": {
-        "extends": "@davezuko/eslint-config"
+        "extends": "@davezuko/eslint-config",
+        "ignorePatterns": [
+            "dist"
+        ]
     },
     "devDependencies": {
         "@types/node": "^17.0.15",

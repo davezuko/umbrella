@@ -11,7 +11,7 @@ esbuild.build({
         esbuildPluginPreact({
             // set to true to remove "preact/debug" from the bundle.
             stripDevtools: false,
-        })
+        }),
     ],
 })
 ```

@@ -6,6 +6,7 @@ import * as util from "util"
 import * as esbuild from "esbuild"
 import * as express from "express"
 import * as compression from "compression"
+// @ts-expect-error
 import _copydir from "copy-dir"
 import type {
     BuildOptions,
@@ -96,7 +97,7 @@ export let createServeOptions = (): ServeOptions => {
 
 export let build = async (buildOptions: BuildOptions) => {
     // clean outdir
-    await fs.promises.rm(buildOptions.outdir, {recursive: true, force: true})
+    await fs.promises.rm(buildOptions.outdir!, {recursive: true, force: true})
 
     // build
     let result = await esbuild.build(buildOptions)

@@ -14,6 +14,7 @@ let main = async () => {
     console.log("test files:", testFiles)
     // TODO: maybe bundle all tests together
     let results = await Promise.all(testFiles.map((file) => runTestFile(file)))
+    void results
     try {
         await fs.promises.rm(TEMPDIR, {recursive: true, force: true})
     } catch (e) {
