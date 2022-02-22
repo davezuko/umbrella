@@ -12,7 +12,7 @@
     "dependencies": {
         "@davezuko/eslint-config": "^0.1.0",
         "@davezuko/prettier-config": "^0.1.0",
-        "eslint": "^8.8.0",
+        "eslint": "^8.9.0",
         "prettier": "^2.5.1"
     }
 }
