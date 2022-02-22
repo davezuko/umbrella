@@ -1,41 +1,25 @@
 import * as api from "../api/api"
 import * as esbuild from "esbuild"
 
-interface Context {
-    buildOptions: api.BuildOptions
-    serveOptions: api.ServeOptions
+interface Command {
+    name: string
+    run(args: string[]): Promise<void>
 }
 
-export let run = async (osArgs: string): Promise<number> => {
-    let command = ""
-    let args: string[] = []
-    for (let arg of osArgs) {
-        if (!command) {
-            command = arg
-        } else {
-            args.push(arg)
-        }
-    }
-    try {
-        await runCommand(command, args)
-        return 0
-    } catch (e) {
-        console.error(e.message)
-        return 1
-    }
-}
-
-let runCommand = async (command: string, args: string[]): Promise<void> => {
-    switch (command) {
-        case "debug": {
+let commands: Command[] = [
+    {
+        name: "debug",
+        async run(args: string[]) {
             let ctx = await finalizeOptions(args)
             console.debug({
                 build: ctx.buildOptions,
                 serve: ctx.serveOptions,
             })
-            break
-        }
-        case "build": {
+        },
+    },
+    {
+        name: "build",
+        async run(args: string[]) {
             let ctx = await finalizeOptions(args, (ctx) => {
                 ctx.buildOptions.minify = true
             })
@@ -44,9 +28,11 @@ let runCommand = async (command: string, args: string[]): Promise<void> => {
                 let text = await esbuild.analyzeMetafile(result.metafile)
                 console.log(text)
             }
-            break
-        }
-        case "new": {
+        },
+    },
+    {
+        name: "new",
+        async run(args: string[]) {
             let options: api.CreateProjectOptions = {
                 dir: "",
                 template: {
@@ -74,9 +60,11 @@ let runCommand = async (command: string, args: string[]): Promise<void> => {
                 options.template.dir = "web-app"
             }
             await api.createNewProject(options)
-            break
-        }
-        case "run": {
+        },
+    },
+    {
+        name: "run",
+        async run(args: string[]) {
             let options: api.RunOptions = {
                 inputFile: "",
             }
@@ -87,23 +75,52 @@ let runCommand = async (command: string, args: string[]): Promise<void> => {
                 }
             }
             await api.run(options)
-            break
-        }
-        case "serve": {
+        },
+    },
+    {
+        name: "serve",
+        async run(args: string[]) {
             let ctx = await finalizeOptions(args)
             await api.serve(ctx.serveOptions)
-            break
-        }
-        case "start": {
+        },
+    },
+    {
+        name: "start",
+        async run(args: string[]) {
             let ctx = await finalizeOptions(args, (ctx) => {
                 ctx.buildOptions.minify = false
             })
             await api.start(ctx.buildOptions, ctx.serveOptions)
-            break
+        },
+    },
+]
+
+interface Context {
+    buildOptions: api.BuildOptions
+    serveOptions: api.ServeOptions
+}
+
+export let run = async (osArgs: string[]): Promise<number> => {
+    let commandName = ""
+    let args: string[] = []
+    for (let arg of osArgs) {
+        if (!commandName && arg[0] !== "-") {
+            commandName = arg
+        } else {
+            args.push(arg)
         }
-        default: {
-            throw new Error(`unknown command: ${command}`)
+    }
+    try {
+        let command = commands.find((c) => c.name === commandName)
+        if (!command) {
+            console.error("unknown command: %s", commandName)
+            return 1
         }
+        await command.run(args)
+        return 0
+    } catch (e) {
+        console.error(e.message)
+        return 1
     }
 }
 
