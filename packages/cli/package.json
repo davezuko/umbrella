@@ -1,0 +1,20 @@
+{
+    "name": "@davezuko/cli",
+    "version": "0.0.0",
+    "license": "MIT",
+    "description": "",
+    "homepage": "https://github.com/davezuko/umbrella/tree/master/packages/cli",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/davezuko/umbrella.git"
+    },
+    "type": "module",
+    "source": "./src/index.ts",
+    "main": "./dist/index.cjs",
+    "exports": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "sideEffects": false,
+    "files": [
+        "dist"
+    ]
+}

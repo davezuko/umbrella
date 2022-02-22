@@ -22,36 +22,42 @@ let exec = util.promisify(cp.exec)
 let copydir = util.promisify(_copydir)
 
 export let loadProjectConfig = async (dir?: string): Promise<ProjectConfig> => {
+    let config: ProjectConfig = {
+        build: {},
+        serve: {},
+    }
     if (!dir) {
         dir = process.cwd()
     }
     let prv = ""
     while (prv !== dir) {
         prv = dir
+
+        let file = path.join(dir, "package.json")
+        console.debug("looking for nearest package.json, trying: %s", file)
+        let pkg: any
         try {
-            let file = path.join(dir, "package.json")
-            console.debug("looking for nearest package.json, trying: %s", file)
             let raw = await fs.promises.readFile(file, "utf8")
-            console.debug("using package.json file: %s", file)
-            let pkg = JSON.parse(raw)
-            let cfg = readPackageJSON(pkg)
-            cfg.build.absWorkingDir = file
-            return cfg
-        } catch (e) {}
-        dir = path.join(dir, "..")
+            pkg = JSON.parse(raw)
+        } catch (e) {
+            console.warn("failed to read %s: %s", file, e)
+        }
+        if (!pkg) {
+            dir = path.join(dir, "..")
+            continue
+        }
+        console.debug("using package.json file: %s", file)
+        config.build.absWorkingDir = file
+        readPackageJSONInto(config, pkg)
     }
-    return {
-        build: {},
-        serve: {},
-    }
+
+    return config
 }
 
-export let readPackageJSON = (pkg: {[key: string]: any}): ProjectConfig => {
-    console.debug("read package.json", pkg)
-    let config: ProjectConfig = {
-        build: {},
-        serve: {},
-    }
+export let readPackageJSONInto = (
+    config: ProjectConfig,
+    pkg: {[key: string]: any},
+) => {
     if (pkg.smite) {
         if (typeof pkg.smite.build === "object") {
             config.build = pkg.smite.build
@@ -60,7 +66,6 @@ export let readPackageJSON = (pkg: {[key: string]: any}): ProjectConfig => {
             config.serve = pkg.smite.serve
         }
     }
-
     if (!config.build.entryPoints) {
         if (typeof pkg.exports === "object") {
             config.build.entryPoints = {}
@@ -73,7 +78,6 @@ export let readPackageJSON = (pkg: {[key: string]: any}): ProjectConfig => {
             }
         }
     }
-    return config
 }
 
 export let createBuildOptions = (): BuildOptions => {
