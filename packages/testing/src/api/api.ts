@@ -4,12 +4,11 @@ export let test = (name: string, fn: TestFn) => {
     return impl.test(name, fn)
 }
 
-export let run = (): Promise<TestSuite[]> => {
+export let run = (): Promise<TestSuiteResult[]> => {
     return impl.run()
 }
 
-export let runFile = (path: string): Promise<TestSuite> => {
-    // @ts-expect-error
+export let runFile = (path: string): Promise<TestSuiteResult> => {
     return impl.runFile(path)
 }
 
@@ -35,22 +34,22 @@ export interface Test {
 export type TestFn = (t: TestUtil) => void
 
 export interface TestResult {
-    info: TestResultInfo
+    info: any
     logs: any[]
 }
-
-export type TestSuiteResult = {type: "error"; message: string} | {type: "done"}
-
-export type TestResultInfo =
-    | {state: "idle"}
-    | {state: "skipped"}
-    | {state: "running"}
-    | {state: "error"; error: any}
-    | {state: "fail"}
-    | {state: "done"}
 
 export interface TestSuite {
     file: string
     tests: Test[]
-    result?: TestSuiteResult
 }
+
+export type TestSuiteResult =
+    | {
+          type: "failed-to-run"
+          suite: TestSuite
+          message: string
+      }
+    | {
+          type: "finished"
+          suite: TestSuite
+      }

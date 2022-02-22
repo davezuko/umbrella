@@ -3,19 +3,19 @@ import * as os from "os"
 import * as path from "path"
 import * as esbuild from "esbuild"
 import {sprintf} from "sprintf-js"
-import {Test, TestFn} from "./api"
-import {TestSuite} from ".."
+import * as api from "./api"
 
 const IGNORE_DIRS = new Set(["node_modules", "dist"])
-const TEST_PATTERN = /\.test\.(js|jsx|ts|tsx)$/
-let _registeredTests: Test[] = []
+const TEST_PATTERN = /\.test\.(ts|tsx)$/
 
-export let test = (name: string, fn: TestFn) => {
+let _registeredTests: api.Test[] = []
+
+export let test = (name: string, fn: api.TestFn) => {
     let test = {name, func: fn}
     _registeredTests.push(test)
 }
 
-export let run = async (): Promise<TestSuite[]> => {
+export let run = async (): Promise<api.TestSuiteResult[]> => {
     let tmp = await fs.promises.mkdtemp(path.join(os.tmpdir(), "testrunner-"))
     let testFiles = await findTestFiles()
 
@@ -63,34 +63,71 @@ let findTestFiles = async (): Promise<string[]> => {
     return result
 }
 
-export let runFile = async (file: string): Promise<void> => {
-    console.log("run test file: %s", file)
-    let name = path.basename(file, path.extname(file))
-    let suffix = ""
-    // @ts-expect-error
-    let outfile = path.join(TEMPDIR, name + suffix + ".js")
-    console.log("bundle %s -> %s", file, outfile)
+export let runFile = async (file: string): Promise<api.TestSuiteResult> => {
+    let suite = new TestSuite(file)
+    let buildResult = await suite.build()
+    if (!buildResult.ok)
+        if (!(await suite.build())) {
+            return {
+                suite,
+                type: "error",
+                message: "Failed to build",
+            }
+        }
+    return suite
+}
 
-    let bundle = await esbuild.build({
-        entryPoints: [file],
-        outfile,
-        bundle: true,
-        splitting: false,
-        format: "cjs",
-        platform: "node",
-        target: "es2020",
-        // logLevel: "info",
-    })
-    if (bundle.errors.length) {
-        // return {
-        //     type: "error",
-        //     message: "failed to bundle test file",
-        //     errors: bundle.errors,
-        // }
+class TestSuite {
+    file: string
+    outfile: string
+
+    constructor(file: string) {
+        this.file = file
+        this.outfile = ""
     }
-    // return {
-    // type: "success",
-    // }
+
+    async build(): Promise<Result<void, string>> {
+        let prefix = path.join(os.tmpdir(), "testing-")
+        let tmp = await fs.promises.mkdtemp(prefix)
+        this.outfile = path.join(tmp, "script.js")
+        let bundle = await esbuild.build({
+            entryPoints: [this.file],
+            outfile: this.outfile,
+            bundle: true,
+            splitting: false,
+            format: "cjs",
+            platform: "node",
+            target: "es2020",
+        })
+        if (bundle.errors.length) {
+            return Result.error("esbuild failed with errors")
+        }
+        return Result.ok()
+    }
+}
+
+class Result<T, E> {
+    data?: T
+    error?: E
+    type: string
+
+    constructor(data?: T, error?: E) {
+        this.type = ""
+        this.data = data
+        this.error = error
+    }
+
+    ok(): asserts this is {type: "ok"; data: T} {
+        return this.type === "ok"
+    }
+
+    static error<T, E = string>(message: E): Result<T, E> {
+        return new Result<T, E>(null as any, message)
+    }
+
+    static ok<T, E = string>(data?: T): Result<T, E> {
+        return new Result(data)
+    }
 }
 
 const STOP_TEST = Symbol()
