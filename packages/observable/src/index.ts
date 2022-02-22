@@ -16,6 +16,7 @@ export let autorun = (fn: () => void): Disposer => {
  * Makes target's properties observable.
  */
 export let extendObservable = <T>(_target: T) => {
+    // @ts-expect-error
     return null as T
 }
 

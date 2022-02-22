@@ -9,6 +9,8 @@
         "sourceMap": false,
         "skipLibCheck": true,
         "importHelpers": true,
-        "noEmitHelpers": true
+        "noEmitHelpers": true,
+        "emitDeclarationOnly": true,
+        "allowSyntheticDefaultImports": true
     }
 }

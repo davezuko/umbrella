@@ -4,8 +4,9 @@ import * as cp from "child_process"
 import * as path from "path"
 import * as util from "util"
 import * as esbuild from "esbuild"
-import * as express from "express"
-import * as compression from "compression"
+import express from "express"
+import compression from "compression"
+// @ts-expect-error
 import _copydir from "copy-dir"
 import type {
     BuildOptions,

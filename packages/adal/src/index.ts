@@ -207,6 +207,7 @@ export let createAuthenticationContext = (
             return popupWindow
         } catch (e) {
             if (process.env.NODE_ENV === "development") {
+                // @ts-expect-error
                 Logger.warn("Error opening popup, " + e.message)
             }
             _loginInProgress = false
@@ -374,6 +375,7 @@ export let createAuthenticationContext = (
                         fn(errorDesc, token, error, tokenType)
                     } catch (error) {
                         if (process.env.NODE_ENV === "development") {
+                            // @ts-expect-error
                             Logger.warn(error)
                         }
                     }
@@ -1214,6 +1216,7 @@ export let createAuthenticationContext = (
             return JSON.parse(base64Decoded)
         } catch (err) {
             if (process.env.NODE_ENV === "development") {
+                // @ts-expect-error
                 Logger.error("The returned id_token could not be decoded", err)
             }
         }

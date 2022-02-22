@@ -119,6 +119,7 @@ export let run = async (osArgs: string[]): Promise<number> => {
         await command.run(args)
         return 0
     } catch (e) {
+        // @ts-expect-error
         console.error(e.message)
         return 1
     }

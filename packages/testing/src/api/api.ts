@@ -9,6 +9,7 @@ export let run = (): Promise<TestSuite[]> => {
 }
 
 export let runFile = (path: string): Promise<TestSuite> => {
+    // @ts-expect-error
     return impl.runFile(path)
 }
 

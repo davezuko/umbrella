@@ -1,5 +1,3 @@
-You can stand under my ☂️ _ella, ella, 🇨🇦 🇨🇦 🇨🇦_.
-
 Things I enjoy: few node_modules and tiny bundle sizes. Maybe you enjoy these things too.
 
 ## Packages

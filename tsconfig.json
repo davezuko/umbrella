@@ -3,7 +3,9 @@
     "include": [],
     "references": [
         {"path": "./packages/adal"},
+        {"path": "./packages/esbuild-plugin-preact"},
         {"path": "./packages/observable"},
+        {"path": "./packages/smite"},
         {"path": "./packages/testing"}
     ]
 }
