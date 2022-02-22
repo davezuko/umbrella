@@ -20,7 +20,6 @@ export let run = async (osArgs: string): Promise<number> => {
         await runCommand(command, args)
         return 0
     } catch (e) {
-        // @ts-expect-error
         console.error(e.message)
         return 1
     }
@@ -75,6 +74,19 @@ let runCommand = async (command: string, args: string[]): Promise<void> => {
                 options.template.dir = "web-app"
             }
             await api.createNewProject(options)
+            break
+        }
+        case "run": {
+            let options: api.RunOptions = {
+                inputFile: "",
+            }
+            for (let arg of args) {
+                if (arg[0] !== "-") {
+                    options.inputFile = arg
+                    break
+                }
+            }
+            await api.run(options)
             break
         }
         case "serve": {

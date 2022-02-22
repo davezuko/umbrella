@@ -8,6 +8,10 @@ export interface ProjectConfig {
     serve: Partial<ServeOptions>
 }
 
+export interface RunOptions {
+    inputFile: string
+}
+
 export interface ServeOptions {
     protocol: "http" | "https"
     host: string
@@ -52,6 +56,10 @@ export let createServeOptions = (): ServeOptions => {
 
 export let build = (buildOptions: BuildOptions) => {
     return impl.build(buildOptions)
+}
+
+export let run = (runOptions: RunOptions) => {
+    return impl.run(runOptions)
 }
 
 export let serve = (serveOptions: ServeOptions) => {

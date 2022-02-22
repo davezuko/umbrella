@@ -6,13 +6,13 @@ import * as util from "util"
 import * as esbuild from "esbuild"
 import * as express from "express"
 import * as compression from "compression"
-// @ts-expect-error
 import _copydir from "copy-dir"
 import type {
     BuildOptions,
     CreateProjectOptions,
     CreateProjectResult,
     ProjectConfig,
+    RunOptions,
     ServeOptions,
     ServeResult,
 } from "./api"
@@ -110,6 +110,29 @@ export let build = async (buildOptions: BuildOptions) => {
         }
     } catch (e) {}
     return result
+}
+
+export let run = async (runOptions: RunOptions) => {
+    let prefix = path.join(os.tmpdir(), "smite-")
+    let tmp = await fs.promises.mkdtemp(prefix)
+    let outfile = path.join(tmp, "script.js")
+    await esbuild.build({
+        entryPoints: {
+            script: runOptions.inputFile,
+        },
+        outfile,
+        minify: false,
+        bundle: true,
+        platform: "node",
+        target: "esnext",
+        plugins: [],
+    })
+    try {
+        cp.execSync(`node ${outfile}`, {stdio: "inherit"})
+    } catch (e) {}
+    try {
+        await fs.promises.rm(tmp, {recursive: true})
+    } catch (e) {}
 }
 
 export let serve = async (serveOptions: ServeOptions) => {
