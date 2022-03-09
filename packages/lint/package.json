@@ -1,6 +1,6 @@
 {
     "name": "@davezuko/lint",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "license": "MIT",
     "description": "My preferred linter configuration",
     "homepage": "https://github.com/davezuko/umbrella/tree/master/packages/lint",
@@ -10,7 +10,8 @@
     },
     "main": "index.js",
     "dependencies": {
-        "@davezuko/eslint-config": "^0.1.0",
+        "@davezuko/eslint-config": "^0.2.0",
+        "@davezuko/eslint-config-react": "^0.1.0",
         "@davezuko/prettier-config": "^0.1.0",
         "eslint": "^8.10.0",
         "prettier": "^2.5.1"
