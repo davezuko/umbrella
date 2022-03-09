@@ -1,0 +1,15 @@
+{
+    "name": "@davezuko/eslint-config-react",
+    "version": "0.1.0",
+    "license": "MIT",
+    "description": "My preferred eslint configuration for React",
+    "homepage": "https://github.com/davezuko/umbrella/tree/master/packages/eslint-config-react",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/davezuko/umbrella.git"
+    },
+    "main": "index.js",
+    "dependencies": {
+        "eslint-plugin-react": "^7.29.3"
+    }
+}
