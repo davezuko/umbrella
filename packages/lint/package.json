@@ -13,7 +13,7 @@
         "@davezuko/eslint-config": "^0.2.0",
         "@davezuko/eslint-config-react": "^0.1.0",
         "@davezuko/prettier-config": "^0.1.0",
-        "eslint": "^8.10.0",
-        "prettier": "^2.5.1"
+        "eslint": "^8.11.0",
+        "prettier": "^2.6.0"
     }
 }
