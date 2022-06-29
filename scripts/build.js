@@ -7,19 +7,10 @@ let verbose = process.argv.includes("--verbose")
 
 let main = async () => {
     let packages = fs.readdirSync("packages")
-
-    // remove all dist folders
-    for (let name of packages) {
-        fs.rmSync(path.join("packages", name, "dist"), {
-            recursive: true,
-            force: true,
-        })
-    }
-
-    // build all packages
     for (let name of packages) {
         try {
-            await buildPackage(name)
+            const cwd = path.join("packages", name)
+            await buildPackage(cwd)
         } catch (e) {
             process.exit(1)
         }
@@ -32,17 +23,23 @@ let main = async () => {
     })
 }
 
-let buildPackage = async (name) => {
-    console.info("build package: %s", name)
-    let cwd = path.join("packages", name)
+let buildPackage = async (cwd) => {
     let pkg = JSON.parse(
         fs.readFileSync(path.join(cwd, "package.json"), "utf8"),
     )
+
     if (!pkg.main || !/\.(ts|tsx)$/.test(pkg.main)) {
+        console.info(" [skip] %s", pkg.name)
         return
     }
 
-    let outdir = path.join("packages", name, "dist")
+    console.info("[build] %s", pkg.name)
+    let outdir = path.join(cwd, "dist")
+    await fs.promises.rm(outdir, {
+        recursive: true,
+        force: true,
+    })
+
     let external = Object.keys(pkg.dependencies || {})
     fs.rmSync(outdir, {recursive: true, force: true})
     let result = esbuild.buildSync({
@@ -68,4 +65,9 @@ let buildPackage = async (name) => {
     })
 }
 
-main()
+const cwd = process.cwd()
+if (cwd.includes("packages")) {
+    buildPackage(cwd)
+} else {
+    main()
+}
