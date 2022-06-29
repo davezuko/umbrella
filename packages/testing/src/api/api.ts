@@ -1,15 +1,13 @@
-import * as impl from "./api_impl"
-
-export let test = (name: string, fn: TestFn) => {
-    return impl.test(name, fn)
+export let test = (_name: string, _fn: TestFn) => {
+    throw new Error("not implemented")
 }
 
 export let run = (): Promise<TestSuiteResult[]> => {
-    return impl.run()
+    throw new Error("not implemented")
 }
 
-export let runFile = (path: string): Promise<TestSuiteResult> => {
-    return impl.runFile(path)
+export let runFile = (_path: string): Promise<TestSuiteResult> => {
+    throw new Error("not implemented")
 }
 
 export interface TestUtil {

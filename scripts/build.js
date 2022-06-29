@@ -38,7 +38,7 @@ let buildPackage = async (name) => {
     let pkg = JSON.parse(
         fs.readFileSync(path.join(cwd, "package.json"), "utf8"),
     )
-    if (!pkg.source) {
+    if (!pkg.main || !/\.(ts|tsx)$/.test(pkg.main)) {
         return
     }
 
@@ -46,8 +46,8 @@ let buildPackage = async (name) => {
     let external = Object.keys(pkg.dependencies || {})
     fs.rmSync(outdir, {recursive: true, force: true})
     let result = esbuild.buildSync({
-        entryPoints: [path.join(cwd, pkg.source)],
-        outfile: path.join(cwd, pkg.exports),
+        entryPoints: [path.join(cwd, pkg.main)],
+        outfile: path.join(cwd, pkg.publishConfig.exports),
         bundle: true,
         platform: "node",
         format: "esm",
@@ -59,8 +59,8 @@ let buildPackage = async (name) => {
         console.log(text)
     }
     esbuild.buildSync({
-        entryPoints: [path.join(cwd, pkg.source)],
-        outfile: path.join(cwd, pkg.main),
+        entryPoints: [path.join(cwd, pkg.main)],
+        outfile: path.join(cwd, pkg.publishConfig.main),
         bundle: true,
         platform: "node",
         format: "cjs",
