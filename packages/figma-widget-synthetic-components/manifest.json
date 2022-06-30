@@ -1,0 +1,11 @@
+{
+    "id": "1124121342502779873",
+    "name": "Synthetic Components",
+    "api": "1.0.0",
+    "widgetApi": "1.0.0",
+    "editorType": ["figma", "figjam"],
+    "main": "dist/plugin/plugin.js",
+    "ui": "dist/ui/ui.html",
+    "permissions": [],
+    "containsWidget": true
+}
